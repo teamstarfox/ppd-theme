@@ -1,0 +1,114 @@
+name: Build and deploy Plan Pack Discover theme
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - staging
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plan-pack-discover-theme-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build and validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production assets
+        run: npm run build
+
+      - name: Assemble deployable theme
+        run: |
+          mkdir deploy
+          rsync -a \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.DS_Store' \
+            --exclude 'deploy/' \
+            --exclude 'node_modules/' \
+            --exclude '.eslintrc' \
+            --exclude '.gitignore' \
+            --exclude '.stylelintrc.json' \
+            --exclude 'composer.json' \
+            --exclude 'composer.lock' \
+            --exclude 'gulpfile.js' \
+            --exclude 'package.json' \
+            --exclude 'package-lock.json' \
+            --exclude 'phpcs.xml.dist' \
+            ./ deploy/
+
+      - name: Upload deployable theme
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan-pack-discover-theme-${{ github.sha }}
+          path: deploy/
+          retention-days: 1
+
+  deploy-staging:
+    name: Deploy to staging
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://testppd.wpenginepowered.com/
+    steps:
+      - name: Download built theme
+        uses: actions/download-artifact@v4
+        with:
+          name: plan-pack-discover-theme-${{ github.sha }}
+          path: theme
+
+      - name: Deploy theme to WP Engine staging
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          WPE_ENV: testppd
+          SRC_PATH: theme/
+          REMOTE_PATH: wp-content/themes/planpackdiscover/
+          PHP_LINT: true
+          CACHE_CLEAR: true
+
+  deploy-production:
+    name: Deploy to production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://planpackdiscover.com/
+    steps:
+      - name: Download built theme
+        uses: actions/download-artifact@v4
+        with:
+          name: plan-pack-discover-theme-${{ github.sha }}
+          path: theme
+
+      - name: Deploy theme to WP Engine production
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          WPE_ENV: prodppd
+          SRC_PATH: theme/
+          REMOTE_PATH: wp-content/themes/planpackdiscover/
+          PHP_LINT: true
+          CACHE_CLEAR: true

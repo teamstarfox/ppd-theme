@@ -510,3 +510,9 @@ function ppd_render_hero_image( $image_id ) {
 
     <?php
 }
+
+function acf_json_data( $path ) {
+    return get_stylesheet_directory() . '/acf-json';
+}
+add_filter( 'acf/settings/save_json', 'acf_json_data' );
+add_filter( 'acf/settings/load_json', 'acf_json_data' );

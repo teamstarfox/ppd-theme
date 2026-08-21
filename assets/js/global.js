@@ -1,6 +1,6 @@
 let menuToggle = document.getElementsByClassName("menu-toggle");
 let mobileMenu = document.getElementById('site-navigation');
-let mainContent = document.getElementById('page');
+let mainContent = document.getElementById('content');
 let menuContainer = document.querySelector('.menu-main-menu-container');
 
 let mobileNav = function() {

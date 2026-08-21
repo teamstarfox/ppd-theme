@@ -11,7 +11,7 @@
 			<footer id="colophon" class="site-footer">
 				<div class="container">
 					<div class="footer-logo">
-						<?php echo wp_get_attachment_image( 872, 'Large', '', array('class' => '') ); ?>
+						<?php the_custom_logo(); ?>
 						<p class="tagline">Adventure awaits,<br>but preparation comes first.</p>
 					</div>
 					<div class="footer-menu">
@@ -36,21 +36,21 @@
 							);
 						?>
 					</div>
-					<div class="footer-menu">
+					<div class="footer-menu social-menu">
 						<h4>Follow Us</h4>
-						<?php
-							wp_nav_menu(
-								array(
-									'theme_location' => 'menu-4',
-									'menu_id'        => 'social-menu',
-								)
-							);
-						?>
+						<div class="social-icons">
+							<?php get_template_part( 'template-parts/blog/component', 'social-follow-icons' ); ?>
+						</div>
 					</div>
 				</div>
-			</footer>
-			
-		</div><!-- #page -->
+
+				<div class="copyright">
+					<div class="container">
+						<p>&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?>. All rights reserved.</p>
+						<p>Adventure Responsibly</p>
+					</div>
+				</div>
+			</footer>			
 		<?php wp_footer(); ?>
 	</body>
 </html>

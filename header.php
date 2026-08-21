@@ -80,7 +80,4 @@
 				</nav>
 			</div>
 		</header>
-		
-		<div id="page" class="site">
-
-			<main id="content">
+		<main id="content">

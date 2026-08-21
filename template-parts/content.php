@@ -26,7 +26,7 @@
 					wp_kses_post( get_the_title() )
 				)
 			);
-			get_template_part( 'template-parts/components/component-block' );
+			get_template_part( 'template-parts/content', 'footer' );
 			?>
 		</div>
 	</div>

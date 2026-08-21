@@ -12,7 +12,7 @@ get_template_part( 'template-parts/sections/section', 'page-hero' );
         </div>
         <?php 
         // get_sidebar();
-        get_template_part( 'template-parts/components/component-block' );
+        get_template_part( 'template-parts/content', 'footer' );
         ?>
     </div>
 </section>
